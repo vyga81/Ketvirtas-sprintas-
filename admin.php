@@ -41,7 +41,7 @@ require_once 'conn.php';
   <td><a href=""><?php echo $title['title'] ?></a></td>
   <td><a href=""><?php echo $title['create_date'] ?></a></td>
   <td><button type="button" class="btn btn-sm btn-info">Edit</button></td>
-  <td><button type="button" class="btn btn-sm btn-danger">Delete</button></td>
+  <td><a href="delete.php?id=<?php echo $title['id']?>" type="button" class="btn btn-sm btn-danger">Delete</a></td>
   
 </tr>
     

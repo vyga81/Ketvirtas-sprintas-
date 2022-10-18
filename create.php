@@ -1,7 +1,38 @@
 
 <?php
-require_once 'conn.php';
+// connect to db
+$pdo = new PDO('mysql:host=localhost;port=3306;dbname=blog2', 'root', '');
+// we are telling PDO what to do if connection is not successeful
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+$errors = [];
+
+$title = '';
+$content = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$title = $_POST['title'];
+$content = $_POST['content'];
+$date = date('Y-m-d H:i:s');
+
+
+
+if (!$title) {
+  $errors[] = 'Title is required';
+}
+if (!$content) {
+  $errors[] = 'Content is required';
+}
+
+if (empty($errors)){
+        $statement = $pdo->prepare("INSERT INTO cms (title, content, create_date) VALUES (:title, :content, :date)");
+
+     $statement->bindValue(':title', $title);
+     $statement->bindValue(':content', $content);
+     $statement->bindValue(':date', $date);
+     $statement->execute();
+}
+}
 ?>
 
 <!doctype html>
@@ -15,17 +46,29 @@ require_once 'conn.php';
     <link rel="stylesheet" href="app.css">
   </head>
 <body>
+<?php if  (!empty($errors)): ?>
+     <div class="alert alert-danger">
+           <?php foreach ($errors as $error): ?>
+           <div><?php echo $error?></div>
+           <?php endforeach; ?>
+      </div>
+<?php endif; ?>
+
+
     <form action="create.php" method="post">
+
       <div class="mb-3 container form-group" >
          <a href="index.php" class="d-inline-flex p-2"> Back</a>
          <label  class="form-label ">Content title</label>
-         <input type="text" class="form-control text-center  "  placeholder="Content title">
+         <input name="title" type="text" class="form-control text-center" value="<?php echo $title?>"  placeholder="Content title">
       </div>
+
       <div class="mb-3 form-group container">
          <label  class="form-label">Content textarea</label>
-         <input type="text"  class="form-control"  rows="3"></input>
-         <button type="button" class="btn btn-info">Create</button>
+         <input  name="content" type="text"  class="form-control" valu="<?php echo $content?>" placeholder="Your content is here"  ></input>
+         <button type="submit" class="btn btn-info ">Create</button>
       </div>
+
     </form>
 
 </body>
